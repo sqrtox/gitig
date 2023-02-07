@@ -1,0 +1,16 @@
+{
+    "cSpell.words": [
+        "confy",
+        "dialoguer",
+        "gitig",
+        "gpgsign",
+        "itertools",
+        "signingkey",
+        "sqrtox"
+    ],
+    "cSpell.ignorePaths": [
+        ".git/objects",
+        ".vscode",
+        "Cargo.lock"
+    ]
+}
