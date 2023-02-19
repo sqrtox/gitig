@@ -14,6 +14,11 @@ pub struct Arg {
 
 #[derive(Debug, Subcommand)]
 pub enum Commands {
+    #[clap(about = "Import settings from another configuration file")]
+    Import {
+        #[clap(help = "Path of the configuration file you want to import")]
+        path: String,
+    },
     #[clap(about = "Displays the location of the configuration file")]
     Config {
         #[clap(short, long, help = "Open in editor")]

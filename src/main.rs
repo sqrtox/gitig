@@ -10,12 +10,57 @@ use config::Profile;
 use confy::ConfyError;
 use dialoguer::theme::ColorfulTheme;
 use dialoguer::Confirm;
+use std::path::Path;
+
 fn main() -> Result<(), ConfyError> {
     let app_name = env!("CARGO_PKG_NAME");
+    let mut not_save_config = false;
     let mut cfg = confy::load::<config::Config>(app_name, None)?;
     let arg = command::Arg::parse();
 
     (|| match &arg.command {
+        Commands::Import { path } => {
+            let path = Path::new(path);
+
+            if !path.exists() {
+                println!("{} The specified path does not exist", color::error());
+
+                return;
+            }
+
+            if !path.is_file() {
+                println!("{} The path specified is not a file", color::error());
+
+                return;
+            }
+
+            let cfg = confy::load_path::<config::Config>(path);
+
+            if cfg.is_err() {
+                println!("{} Bad YAML data", color::error());
+
+                return;
+            }
+
+            not_save_config = true;
+
+            match confy::store(app_name, None, cfg.unwrap()) {
+                Ok(_) => {
+                    println!(
+                        "{} Successfully imported: {} -> {}",
+                        color::successfully(),
+                        path.to_str().unwrap(),
+                        confy::get_configuration_file_path(app_name, None)
+                            .unwrap()
+                            .to_str()
+                            .unwrap()
+                    );
+                }
+                Err(_) => {
+                    println!("{} Import failed", color::error());
+                }
+            }
+        }
         Commands::Config { edit } => {
             match confy::get_configuration_file_path(app_name, None) {
                 Err(_) => {
@@ -182,6 +227,10 @@ fn main() -> Result<(), ConfyError> {
             }
         }
     })();
+
+    if !not_save_config {
+        confy::store(app_name, None, &cfg)?;
+    }
 
     Ok(())
 }
