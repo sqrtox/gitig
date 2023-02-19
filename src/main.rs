@@ -4,13 +4,12 @@ mod config;
 mod git;
 
 use clap::Parser;
-use colored::Colorize;
+use colored::{ColoredString, Colorize};
 use command::Commands;
 use config::Profile;
 use confy::ConfyError;
 use dialoguer::theme::ColorfulTheme;
 use dialoguer::Confirm;
-
 fn main() -> Result<(), ConfyError> {
     let app_name = env!("CARGO_PKG_NAME");
     let mut cfg = confy::load::<config::Config>(app_name, None)?;
@@ -80,22 +79,33 @@ fn main() -> Result<(), ConfyError> {
             );
         }
         Commands::List => {
+            let profiles = cfg.get_profile_names();
+
             println!(
                 "{}\n{}",
                 "Profiles:".bold().underline(),
-                cfg.get_profile_names()
-                    .iter()
-                    .map(|s| format!("  {s}"))
-                    .collect::<Vec<_>>()
-                    .join("\n")
-                    .bold()
+                if profiles.len() > 0 {
+                    profiles
+                        .iter()
+                        .map(|s| format!("  {s}"))
+                        .collect::<Vec<_>>()
+                        .join("\n")
+                        .bold()
+                } else {
+                    ColoredString::from("  No profile yet")
+                }
             );
         }
         Commands::Delete { profile_name, yes } => {
-            let profile_name: &String = &match profile_name {
-                Some(profile_name) => profile_name.to_string(),
-                None => cfg.select_profile_name(),
-            };
+            let profile_name = cfg.select_profile_name(profile_name.as_ref());
+
+            if profile_name.is_none() {
+                println!("Not a single profile");
+
+                return;
+            }
+
+            let profile_name = &profile_name.unwrap();
 
             if !yes {
                 let answer = Confirm::with_theme(&ColorfulTheme::default())
@@ -127,10 +137,15 @@ fn main() -> Result<(), ConfyError> {
             scope,
             profile_name,
         } => {
-            let profile_name: &String = &match profile_name {
-                Some(profile_name) => profile_name.to_string(),
-                None => cfg.select_profile_name(),
-            };
+            let profile_name = cfg.select_profile_name(profile_name.as_ref());
+
+            if profile_name.is_none() {
+                println!("Not a single profile");
+
+                return;
+            }
+
+            let profile_name = &profile_name.unwrap();
             let profile = cfg.profiles.get(profile_name);
 
             match profile {
@@ -167,8 +182,6 @@ fn main() -> Result<(), ConfyError> {
             }
         }
     })();
-
-    confy::store(app_name, None, &cfg)?;
 
     Ok(())
 }

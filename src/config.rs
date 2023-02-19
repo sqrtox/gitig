@@ -28,8 +28,17 @@ impl Config {
             .collect::<Vec<_>>()
     }
 
-    pub fn select_profile_name(&self) -> String {
+    pub fn select_profile_name(&self, prefer: Option<&String>) -> Option<String> {
+        if let Some(prefer) = prefer {
+            return Some(prefer.clone());
+        }
+
         let profile_names = self.get_profile_names();
+
+        if profile_names.len() < 1 {
+            return None;
+        }
+
         let selection = Select::with_theme(&ColorfulTheme::default())
             .with_prompt("Select profile")
             .items(&profile_names)
@@ -37,7 +46,7 @@ impl Config {
             .interact()
             .unwrap();
 
-        profile_names[selection].clone()
+        Some(profile_names[selection].clone())
     }
 }
 
