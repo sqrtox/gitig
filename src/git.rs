@@ -60,9 +60,9 @@ impl GitConfig {
 impl ToString for GitConfigScopes {
     fn to_string(&self) -> String {
         match self {
-            Self::Local => format!("local"),
-            Self::Global => format!("global"),
-            Self::System => format!("system"),
+            Self::Local => "local".to_string(),
+            Self::Global => "global".to_string(),
+            Self::System => "system".to_string(),
         }
     }
 }

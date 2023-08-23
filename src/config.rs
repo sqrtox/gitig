@@ -13,7 +13,7 @@ pub struct Profile {
 }
 
 #[serde_as]
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Default, Deserialize, Serialize)]
 pub struct Config {
     #[serde_as(as = "Vec<(_, _)>")]
     pub profiles: HashMap<String, Profile>,
@@ -21,11 +21,7 @@ pub struct Config {
 
 impl Config {
     pub fn get_profile_names(&self) -> Vec<String> {
-        self.profiles
-            .keys()
-            .sorted()
-            .map(|v| v.clone())
-            .collect::<Vec<_>>()
+        self.profiles.keys().sorted().cloned().collect::<Vec<_>>()
     }
 
     pub fn select_profile_name(&self, prefer: Option<&String>) -> Option<String> {
@@ -35,7 +31,7 @@ impl Config {
 
         let profile_names = self.get_profile_names();
 
-        if profile_names.len() < 1 {
+        if profile_names.is_empty() {
             return None;
         }
 
@@ -47,13 +43,5 @@ impl Config {
             .unwrap();
 
         Some(profile_names[selection].clone())
-    }
-}
-
-impl Default for Config {
-    fn default() -> Self {
-        Self {
-            profiles: HashMap::new(),
-        }
     }
 }

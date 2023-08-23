@@ -129,7 +129,7 @@ fn main() -> Result<(), ConfyError> {
             println!(
                 "{}\n{}",
                 "Profiles:".bold().underline(),
-                if profiles.len() > 0 {
+                if !profiles.is_empty() {
                     profiles
                         .iter()
                         .map(|s| format!("  {s}"))
