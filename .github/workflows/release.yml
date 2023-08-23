@@ -62,11 +62,11 @@ jobs:
       - name: Build
         run: |
           cargo build --release --target=${{ matrix.target }}
-          strip target/${{ matrix.target }}/release/${{ needs.crate_metadata.outputs.name }}
 
       - name: Package for linux-musl
         if: matrix.target == 'x86_64-unknown-linux-musl'
         run: |
+          strip target/${{ matrix.target }}/release/${{ needs.crate_metadata.outputs.name }}
           zip --junk-paths ${{ needs.crate_metadata.outputs.name }}-${{ matrix.target }} target/${{ matrix.target }}/release/${{ needs.crate_metadata.outputs.name }}
 
       - name: Package for windows
