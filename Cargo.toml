@@ -1,28 +1,20 @@
 [package]
 name = "gitig"
-version = "0.2.1"
+version = "0.3.0"
 edition = "2021"
 authors = ["sqrtox"]
 license = "MIT"
 description = "A tool to manage git user settings with profiles."
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
-colored = "2.0.0"
-serde_with = "2.2.0"
-serde_derive = "1.0.152"
-serde = "1.0.152"
-anyhow = "1.0.68"
-edit = "0.1.4"
-itertools = "0.10.5"
-dialoguer = "0.10.3"
+clap = { version = "4.5.11", features = ["derive"] }
+colored = "2.1.0"
+dialoguer = "0.11.0"
+edit = "0.1.5"
+gix-config = "0.38.0"
+platform-dirs = "0.3.0"
+rusqlite = { version = "0.32.1", features = ["bundled"] }
+thiserror = "1.0.63"
 
-[dependencies.confy]
-version = "0.5.1"
-features = ["yaml_conf"]
-default-features = false
-
-[dependencies.clap]
-version = "4.1.4"
-features = ["derive"]
+[profile.release]
+strip = true

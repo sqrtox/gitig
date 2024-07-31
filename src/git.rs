@@ -1,84 +1,37 @@
-use anyhow::Error;
-use std::process::Command;
+use crate::error::{Error, Result};
+use std::process::{Command, Output};
 
-#[derive(Debug, Clone)]
-pub enum GitConfigScopes {
-    Local,
-    Global,
-    System,
+fn get_git_config_command() -> Command {
+    let mut command = Command::new("git");
+
+    command.arg("config");
+    command.arg("--local");
+
+    command
 }
 
-pub struct GitConfig {
-    pub error: bool,
-    pub scope: GitConfigScopes,
-}
-
-impl GitConfig {
-    pub fn new(scope: &GitConfigScopes) -> Self {
-        Self {
-            error: false,
-            scope: scope.clone(),
-        }
-    }
-
-    pub fn set(&mut self, name: &str, value: Option<&str>) -> bool {
-        if self.error {
-            return false;
-        }
-
-        let mut command = Command::new("git");
-        let scope = self.scope.to_string();
-
-        command.arg("config");
-        command.arg(format!("--{scope}"));
-
-        match value {
-            Some(value) => {
-                command.arg(name);
-                command.arg(value);
-            }
-            None => {
-                command.arg("--unset");
-                command.arg(name);
-            }
-        }
-
-        let output = command.output().unwrap();
-
-        if !output.stderr.is_empty() {
-            println!("{}", String::from_utf8_lossy(&output.stderr));
-
-            self.error = true;
-
-            return false;
-        }
-
-        true
+fn handle_error(output: Output) -> Result<()> {
+    if output.status.success() {
+        Ok(())
+    } else {
+        Err(Error::GitConfig(String::from_utf8(output.stderr)?))
     }
 }
 
-impl ToString for GitConfigScopes {
-    fn to_string(&self) -> String {
-        match self {
-            Self::Local => "local".to_string(),
-            Self::Global => "global".to_string(),
-            Self::System => "system".to_string(),
-        }
-    }
+pub fn set_git_config(name: &str, value: &str) -> Result<()> {
+    let mut command = get_git_config_command();
+
+    command.arg(name);
+    command.arg(value);
+
+    handle_error(command.output()?)
 }
 
-impl std::str::FromStr for GitConfigScopes {
-    type Err = Error;
+pub fn unset_git_config(name: &str) -> Result<()> {
+    let mut command = get_git_config_command();
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let scope = if s == "system" {
-            Self::System
-        } else if s == "global" {
-            Self::Global
-        } else {
-            Self::Local
-        };
+    command.arg("--unset");
+    command.arg(name);
 
-        Ok(scope)
-    }
+    handle_error(command.output()?)
 }
