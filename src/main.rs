@@ -1,16 +1,19 @@
 mod cli;
 mod commands;
+mod db;
 mod error;
+mod git;
+mod message;
 mod utils;
 
 use clap::Parser;
 use cli::{Cli, Command};
 use std::process::ExitCode;
-use utils::message::error_message;
 
 fn main() -> ExitCode {
     let Cli { command } = Cli::parse();
     let result = match command {
+        Command::Delete { profile_name } => commands::delete(profile_name),
         Command::Edit { profile_name } => commands::edit(profile_name),
         Command::List { filter } => commands::list(filter),
         Command::Switch {
@@ -20,7 +23,7 @@ fn main() -> ExitCode {
     };
 
     if let Err(err) = result {
-        println!("{}", error_message(&err.to_string()));
+        println!("{}{}", message::error_prefix(), &err.to_string());
 
         ExitCode::FAILURE
     } else {

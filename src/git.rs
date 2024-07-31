@@ -1,6 +1,5 @@
+use crate::error::{Error, Result};
 use std::process::{Command, Output};
-
-use crate::error::Result;
 
 fn get_git_config_command() -> Command {
     let mut command = Command::new("git");
@@ -11,20 +10,28 @@ fn get_git_config_command() -> Command {
     command
 }
 
-pub fn set_git_config(name: &str, value: &str) -> Result<Output> {
+fn handle_error(output: Output) -> Result<()> {
+    if output.status.success() {
+        Ok(())
+    } else {
+        Err(Error::GitConfig(String::from_utf8(output.stderr)?))
+    }
+}
+
+pub fn set_git_config(name: &str, value: &str) -> Result<()> {
     let mut command = get_git_config_command();
 
     command.arg(name);
     command.arg(value);
 
-    Ok(command.output()?)
+    handle_error(command.output()?)
 }
 
-pub fn unset_git_config(name: &str) -> Result<Output> {
+pub fn unset_git_config(name: &str) -> Result<()> {
     let mut command = get_git_config_command();
 
     command.arg("--unset");
     command.arg(name);
 
-    Ok(command.output()?)
+    handle_error(command.output()?)
 }

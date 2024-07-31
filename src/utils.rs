@@ -1,5 +1,8 @@
-pub mod db;
-pub mod git;
-pub mod message;
-pub mod profile;
-pub mod re_exports;
+#[macro_export]
+macro_rules! re_exports {
+    ($x:ident) => {
+        mod $x;
+
+        pub use $x::*;
+    };
+}
