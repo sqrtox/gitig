@@ -13,7 +13,7 @@ use std::process::ExitCode;
 fn main() -> ExitCode {
     let Cli { command } = Cli::parse();
     let result = match command {
-        Command::Delete { profile_name } => commands::delete(profile_name),
+        Command::Delete { profile_name, yes } => commands::delete(profile_name, yes),
         Command::Edit { profile_name } => commands::edit(profile_name),
         Command::List { filter } => commands::list(filter),
         Command::Switch {

@@ -42,5 +42,7 @@ pub enum Command {
     Delete {
         #[clap(help = "Name of the profile to be deleted (if omitted, select from list)")]
         profile_name: Option<String>,
+        #[clap(short, long, help = "Approve all confirmations")]
+        yes: bool,
     },
 }
