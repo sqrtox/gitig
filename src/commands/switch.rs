@@ -10,9 +10,9 @@ pub fn switch(profile_name: Option<String>, unset: bool) -> Result<()> {
     let profile = db
         .select_profile_by_name(&profile_name)?
         .ok_or(Error::ProfileNotFound(profile_name.clone()))?;
-    let profile_body = profile.body.bytes().collect::<Vec<_>>();
+    let profile_body = profile.body.as_bytes();
     let config =
-        File::from_bytes_no_includes(&profile_body, Metadata::default(), Default::default())?;
+        File::from_bytes_no_includes(profile_body, Metadata::default(), Default::default())?;
     let mut effects = 0;
 
     for section in config.sections() {
