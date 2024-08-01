@@ -27,15 +27,15 @@ pub enum Command {
         #[clap(help = "Name of the profile to be applied (if omitted, select from list)")]
         profile_name: Option<String>,
         #[clap(
-            help = "Removes settings included in the profile from the current repository settings",
             short,
-            long
+            long,
+            help = "Removes settings included in the profile from the current repository settings"
         )]
         unset: bool,
     },
     #[clap(about = "Displays a list of profiles")]
     List {
-        #[clap(help = "Filter results by partial match", short, long)]
+        #[clap(short, long, help = "Filter results by partial match")]
         filter: Option<String>,
     },
     #[clap(about = "Delete specified profile")]
