@@ -20,6 +20,7 @@ fn main() -> ExitCode {
             profile_name,
             unset,
         } => commands::switch(profile_name, unset),
+        Command::View { profile_name } => commands::view(profile_name),
     };
 
     if let Err(err) = result {

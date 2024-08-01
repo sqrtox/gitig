@@ -14,6 +14,13 @@ pub struct Cli {
 
 #[derive(Debug, Clone, Subcommand)]
 pub enum Command {
+    #[clap(about = "View profile contents (alias: `v`)", alias = "v")]
+    View {
+        #[clap(
+            help = "Name of the profile whose contents you wish to view (if omitted, select from list)"
+        )]
+        profile_name: Option<String>,
+    },
     #[clap(about = "Create or edit a profile")]
     Edit {
         #[clap(help = "Name of the profile to create or edit (if omitted, select from list)")]
