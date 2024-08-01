@@ -87,11 +87,16 @@ impl Database {
 
     pub fn select_profiles_by_filter(&self, filter: &str) -> Result<Vec<Profile>> {
         Self::query_map_profiles(
-            // TODO: Is this really safe...?
-            params![format!("%{filter}%")],
+            params![format!(
+                "%{}%",
+                filter
+                    .replace('\\', "\\\\")
+                    .replace('_', "\\_")
+                    .replace('%', "\\%")
+            )],
             &mut (self
                 .connection
-                .prepare("SELECT name, body FROM profile WHERE name LIKE (?1)")?),
+                .prepare("SELECT name, body FROM profile WHERE name LIKE (?1) ESCAPE '\\'")?),
         )
     }
 
