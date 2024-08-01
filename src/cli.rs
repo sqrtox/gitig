@@ -33,12 +33,12 @@ pub enum Command {
         )]
         unset: bool,
     },
-    #[clap(about = "Displays a list of profiles")]
+    #[clap(about = "Displays a list of profiles (alias: `l`)", alias = "l")]
     List {
         #[clap(short, long, help = "Filter results by partial match")]
         filter: Option<String>,
     },
-    #[clap(about = "Delete specified profile")]
+    #[clap(about = "Delete specified profile (aliases: `del`, `remove`, `rm`)", aliases = ["del", "remove", "rm"])]
     Delete {
         #[clap(help = "Name of the profile to be deleted (if omitted, select from list)")]
         profile_name: Option<String>,
