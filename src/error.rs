@@ -11,6 +11,8 @@ pub enum Error {
     #[error("{0}")]
     GitConfig(String),
     #[error(transparent)]
+    GitConfigParse(#[from] gix_config::parse::Error),
+    #[error(transparent)]
     FromUtf8(#[from] std::string::FromUtf8Error),
     #[error(transparent)]
     Io(#[from] std::io::Error),

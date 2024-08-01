@@ -20,6 +20,8 @@ pub enum Command {
             help = "Name of the profile whose contents you wish to view (if omitted, select from list)"
         )]
         profile_name: Option<String>,
+        #[clap(short, long, help = "syntax highlight")]
+        color: bool,
     },
     #[clap(about = "Create or edit a profile")]
     Edit {
